@@ -90,6 +90,11 @@ class Quiz extends Component {
             answerState: null
         })
     } // end retryHandler
+
+    componentDidMount() {
+        console.log(this.props);
+        console.log('Quiz ID = ', this.props.match.params.id);
+    }
     
     render() {
         return (
