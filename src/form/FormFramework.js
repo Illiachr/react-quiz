@@ -16,9 +16,11 @@ export function validate(value, validation = null) {
 
     let isValid = true
 
-    if (validation.validation) {
+    if (validation.required) {
         isValid = value.trim() !== '' && isValid
     }
+
+    return isValid
 } // end validate
 
 export function validateForm(formControls) {

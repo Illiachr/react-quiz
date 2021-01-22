@@ -10,11 +10,8 @@ function createOptionControl(number) {
     return createControl({
         label: `Вариант ${number}`,
         errMsg: 'Значение не может быть пустым',
-        id: number,
-        validation: {
-            required: true,
-        }
-    })
+        id: number
+    }, {required: true})
 } // end createOptionControl
 
 function createFormControls() {
@@ -22,10 +19,7 @@ function createFormControls() {
         question: createControl({
             label: 'Введите вопрос',
             errMsg: 'Вопрос не может быть пустым',
-            validation: {
-                required: true,
-            }
-        }),
+        }, {required: true}),
         rightAnswerId: 1,
         option1: createOptionControl(1),
         option2: createOptionControl(2),
@@ -38,8 +32,9 @@ function createFormControls() {
 class QuizCreator extends Component {
 
     state = {
-        isFormValid: false,
         quiz: [],
+        isFormValid: false,        
+        rightAnswerId: 1,
         formControls: createFormControls()
     }
 
@@ -48,7 +43,33 @@ class QuizCreator extends Component {
     } // end submitHandler
 
     addQuestionHandler = e => {
+        e.preventDefault()
 
+        const quiz = this.state.quiz.concat()
+        const index = quiz.length + 1
+
+        const {question, option1, option2, option3, option4} = this.state.formControls
+
+        const questionItem = {
+            question: question.value,
+            id: index,
+            rightAnswerId: this.state.rightAnswerId,
+            answers: [
+                {text: option1.value, id: option1.id},
+                {text: option2.value, id: option2.id},
+                {text: option3.value, id: option3.id},
+                {text: option4.value, id: option4.id},
+            ]
+        }
+
+        quiz.push(questionItem)
+
+        this.setState({
+            quiz,
+            isFormValid: false,
+            rightAnswerId: 1,
+            formControls: createFormControls()
+        })
     } // end addQuestionHandler
 
     createQuizHandler = e => {
@@ -61,7 +82,7 @@ class QuizCreator extends Component {
 
         control.touched = true
         control.value = value
-        control.valid = validate(control.value, control.required)
+        control.valid = validate(control.value, control.validation)
 
         formControls[controlName] = control
 
