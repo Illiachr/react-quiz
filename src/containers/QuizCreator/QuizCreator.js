@@ -5,6 +5,7 @@ import Select from '../../components/UI/Select/Select';
 import { createControl, validate, validateForm } from '../../form/FormFramework';
 import Auxiliary from '../../hoc/Auxiliary/Auxiliary';
 import classes from './QuizCreator.module.css'
+import axios from 'axios'
 
 function createOptionControl(number) {
     return createControl({
@@ -20,7 +21,6 @@ function createFormControls() {
             label: 'Введите вопрос',
             errMsg: 'Вопрос не может быть пустым',
         }, {required: true}),
-        rightAnswerId: 1,
         option1: createOptionControl(1),
         option2: createOptionControl(2),
         option3: createOptionControl(3),
@@ -72,8 +72,18 @@ class QuizCreator extends Component {
         })
     } // end addQuestionHandler
 
-    createQuizHandler = e => {
+    createQuizHandler = async e => {
         e.preventDefault()
+        try {
+            await axios
+                .post('https://react-quiz-35ef7-default-rtdb.firebaseio.com/quizDb.json', this.state.quiz)
+                this.setState({
+                    quiz: [],
+                    isFormValid: false,
+                    rightAnswerId: 1,
+                    formControls: createFormControls()
+                })
+        } catch (e) { console.warn(e); }
     } // end createQuizHandler
 
     changeHandler = (value, controlName) => {
@@ -95,7 +105,6 @@ class QuizCreator extends Component {
     renderControls() {
         return Object.keys(this.state.formControls).map((controlName, i) => {
             const control = this.state.formControls[controlName]
-            console.log(control);
             return (
                 <Auxiliary key={controlName + i}>
                     <Input
@@ -114,7 +123,6 @@ class QuizCreator extends Component {
     } // end renderControls
 
     selectChangeHandler = e => {
-        console.log(e.target.value);
         this.setState({
             rightAnswerId: +e.target.value
         });

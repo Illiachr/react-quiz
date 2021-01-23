@@ -20,9 +20,9 @@ class QuizList extends Component {
     }
 
     componentDidMount() {
-        axios
-            .get('https://react-quiz-35ef7-default-rtdb.firebaseio.com/quiz.json')
-            .then(res => { console.log(res) })
+        // axios
+        //     .get('https://react-quiz-35ef7-default-rtdb.firebaseio.com/quiz.json')
+        //     .then(res => { console.log(res) })
 
     }
     
