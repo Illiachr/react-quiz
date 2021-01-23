@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import classes from './Quiz.module.css'
 import ActiveQuiz from '../../components/ActiveQuiz/ActiveQuiz';
 import FinishedQuiz from '../../components/FinishedQuiz/FinishedQuiz'
+import axios from '../../axios/axios-quiz'
+import Loader from '../../components/UI/Loader/Loader'
 
 class Quiz extends Component {
     state = {
@@ -9,30 +11,8 @@ class Quiz extends Component {
         isFinished: false,
         activeQuestion: 0,
         answerState: null, // { id: 'success' or 'error'}
-        quiz: [
-            {
-                question: 'Какого цвета небо?',
-                rightAnswerId: 2,
-                id: 1,
-                answers: [
-                    {text: 'Черный', id: 1},
-                    {text: 'Синий', id: 2},
-                    {text: 'Красный', id: 3},
-                    {text: 'Зеленый', id: 4},
-                ]
-            },
-            {
-                question: 'В каком году основали Санкт-Петербург',
-                rightAnswerId: 3,
-                id: 2,
-                answers: [
-                    {text: '1700', id: 1},
-                    {text: '1705', id: 2},
-                    {text: '1703', id: 3},
-                    {text: '1803', id: 4},
-                ]
-            }
-        ]
+        quiz: [],
+        loading: true
     } // end state
 
     onAnswerClickHandler = answerId => {
@@ -55,20 +35,7 @@ class Quiz extends Component {
                 answerState: {[answerId]: 'success'},
                 results
             })
-            const timeout = setTimeout(() => {
-                if (this.isQuizFinished()) {
-                    this.setState({
-                        isFinished: true
-                    })
-                } else {
-                    this.setState({
-                        activeQuestion: this.state.activeQuestion + 1,
-                        answerState: null
-                    })
-                } // end if isQuizFinished
-
-                clearTimeout(timeout)
-            }, 1000)
+            
         } else {
             results[question.id] = 'err'
             this.setState({
@@ -76,6 +43,20 @@ class Quiz extends Component {
                 results
             })
         } // end if question
+        const timeout = setTimeout(() => {
+            if (this.isQuizFinished()) {
+                this.setState({
+                    isFinished: true
+                })
+            } else {
+                this.setState({
+                    activeQuestion: this.state.activeQuestion + 1,
+                    answerState: null
+                })
+            } // end if isQuizFinished
+
+            clearTimeout(timeout)
+        }, 1000)
     } // end onAnswerClickHandler
 
     isQuizFinished() {
@@ -91,18 +72,44 @@ class Quiz extends Component {
         })
     } // end retryHandler
 
-    componentDidMount() {
-        console.log(this.props);
+    async componentDidMount() {
         console.log('Quiz ID = ', this.props.match.params.id);
+        try {
+            const response = await axios.get(`/quizDb/${this.props.match.params.id}.json`)
+            const quiz = response.data
+            
+            this.setState({ quiz, loading: false });
+            console.log(this.state.loading)
+            console.log(this.state)
+    } catch (e) { console.warn(e); }
     }
     
     render() {
         return (
             <div className={ classes.Quiz }>       
                 <div className={classes.QuizWrapper}>
-                <h1>Кто ты из героев Marvell</h1>
-
+                <h1>Ответьте на вопросы</h1>
+                
                 {
+                    this.state.loading
+                    ? <Loader/>
+                    : this.state.isFinished
+                        ? <FinishedQuiz
+                            results={this.state.results}
+                            quiz={this.state.quiz}
+                            onRetry={this.retryHandler}
+                        />
+                        : <ActiveQuiz 
+                            answers={this.state.quiz[this.state.activeQuestion].answers}
+                            question={this.state.quiz[this.state.activeQuestion].question}
+                            onAnswerClick={this.onAnswerClickHandler}
+                            quizLength={this.state.quiz.length}
+                            answerNumber={this.state.activeQuestion + 1}
+                            state={this.state.answerState}
+                        />
+                }
+
+                {/* {
                     this.state.isFinished
                     ? <FinishedQuiz
                         results={this.state.results}
@@ -117,7 +124,7 @@ class Quiz extends Component {
                     answerNumber={this.state.activeQuestion + 1}
                     state={this.state.answerState}
                     />
-                }
+                } */}
                 </div>
             </div>
         )

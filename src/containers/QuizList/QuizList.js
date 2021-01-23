@@ -1,29 +1,41 @@
 import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
 import classes from './QuizList.module.css'
-import axios from 'axios'
+import axios from '../../axios/axios-quiz'
+import Loader from '../../components/UI/Loader/Loader';
 
 class QuizList extends Component {
-
+    state = {
+        quizDb: [],
+        loading: true
+    }
     renderQuizes() {
-        return [1, 2, 3].map((quiz, i) => {
+        return this.state.quizDb.map(quiz => {
             return (
                 <li
-                    key={i}
+                    key={quiz.id}
                 >
-                    <NavLink to={'/quiz/' + quiz}>
-                        Тест {quiz}
+                    <NavLink to={'/quiz/' + quiz.id}>
+                        {quiz.name}
                     </NavLink>
                 </li>
             )
         })
     }
 
-    componentDidMount() {
-        // axios
-        //     .get('https://react-quiz-35ef7-default-rtdb.firebaseio.com/quiz.json')
-        //     .then(res => { console.log(res) })
-
+    async componentDidMount() {
+        try {
+                const response = await axios
+                                    .get('/quizDb.json')
+                const quizDb = []
+                Object.keys(response.data).forEach((key, i) => {
+                    quizDb.push({
+                        id: key,
+                        name: `Тест№ ${i + 1}`
+                    })
+                })
+                this.setState({ quizDb, loading: false });
+        } catch (e) { console.warn(e); }
     }
     
 
@@ -32,10 +44,13 @@ class QuizList extends Component {
             <div className={classes.QuizList}>
                 <div>
                     <h1>Список тестов</h1>
-
-                    <ul>
-                        { this.renderQuizes() }
-                    </ul>
+                    {
+                        this.state.loading 
+                        ? <Loader/>
+                        : <ul>
+                                { this.renderQuizes() }
+                            </ul>
+                    }
                 </div>
             </div>
         );
