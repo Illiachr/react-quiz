@@ -7,63 +7,6 @@ import { connect } from 'react-redux';
 import { fetchQuizById, quizAnswerQClick, retryQuiz } from '../../store/actions/quiz';
 
 class Quiz extends Component {
-    // onAnswerClickHandler = answerId => {
-    //     if (this.state.answerState) {
-    //         const key = Object.keys(this.state.answerState)[0]
-    //         if (this.state.answerState[key] === 'success') {
-    //             return;
-    //         }
-    //     }
-
-    //     const question = this.state.quiz[this.state.activeQuestion]
-    //     const results =this.state.results;
-
-    //     if (question.rightAnswerId === answerId) {
-    //         if (!results[question.id]) {
-    //             results[question.id] = 'success'
-    //         }
-
-    //         this.setState({
-    //             answerState: {[answerId]: 'success'},
-    //             results
-    //         })
-            
-    //     } else {
-    //         results[question.id] = 'err'
-    //         this.setState({
-    //             answerState: {[answerId]: 'err'},
-    //             results
-    //         })
-    //     } // end if question
-    //     const timeout = setTimeout(() => {
-    //         if (this.isQuizFinished()) {
-    //             this.setState({
-    //                 isFinished: true
-    //             })
-    //         } else {
-    //             this.setState({
-    //                 activeQuestion: this.state.activeQuestion + 1,
-    //                 answerState: null
-    //             })
-    //         } // end if isQuizFinished
-
-    //         clearTimeout(timeout)
-    //     }, 1000)
-    // } // end onAnswerClickHandler
-
-    // isQuizFinished() {
-    //     return this.state.activeQuestion + 1 === this.state.quiz.length
-    // } // end isQuizFinished
-
-    // retryHandler = () => {
-    //     this.setState({
-    //         results: {},
-    //         isFinished: false,
-    //         activeQuestion: 0,
-    //         answerState: null
-    //     })
-    // } // end retryHandler
-
     async componentDidMount() {
         console.log('Quiz ID = ', this.props.match.params.id);
         this.props.fetchQuizById(this.props.match.params.id)
